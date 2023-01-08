@@ -24,8 +24,8 @@ const thread_popupSlice = createSlice({
         open_thread(state, action: PayloadAction<Thread>) {
             // note to self: the mutation here only works because of redux toolkit
             // due to the Immer library.
-            state.isPopupOpen = true;
             state.thread = action.payload;
+            state.isPopupOpen = true;
         },
         close_thread(state) {
             state.isPopupOpen = false;
