@@ -11,7 +11,7 @@
             "thread_cmmt_no": 7
         },
         {
-            "thread_id": 1,
+            "thread_id": 2,
             "user_id": 1,
             "tag_id": 1,
             "thread_title": "Hi! Can I know who is taking CS2040 next sem?",
@@ -21,7 +21,7 @@
             "thread_cmmt_no": 26
         },
         {
-            "thread_id": 1,
+            "thread_id": 3,
             "user_id": 1,
             "tag_id": 1,
             "thread_title": "Lorem ipsum dolor sit amet",
@@ -31,7 +31,7 @@
             "thread_cmmt_no": 0
         },
         {
-            "thread_id": 1,
+            "thread_id": 4,
             "user_id": 1,
             "tag_id": 1,
             "thread_title": "Nice.",

@@ -1,15 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import './index.css'
 
 import Root from './routes/root';
 import ErrorPage from './routes/error-page';
 import Home from './routes/home'
-import ThreadUI from './ui/ThreadUI';
+import ThreadUI from './ui/thread-ui';
 
 import Thread from './types/Thread';
-
+import { store } from './app/store';
 
 const testThread: Thread = {
   thread_id:      1,
@@ -22,6 +23,7 @@ const testThread: Thread = {
   thread_body:    "Bao babababa Bao bao baobao BANG" +
                   "Mystical Baobab Tree Moment",
 };
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -42,6 +44,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>
 );

@@ -2,13 +2,22 @@ import React from 'react';
 import {
     Card, CardContent, CardActionArea, CardActions, Button, Typography, Box, Modal
 } from '@mui/material';
-import ThreadPopup from './ThreadPopup';
 import Thread from '../types/Thread';
 
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { open_thread } from '../features/thread-popup-slice';
+
 const ThreadUI: React.FC<Thread> = (thread: Thread) => {
+    const isOpen = useAppSelector((state) => state.thread_popup.isPopupOpen);
+    const dispatch = useAppDispatch();
+
+    const handleOpen = () => {
+        dispatch(open_thread(thread));
+    }
+
     return (
         <Card sx={{ width: 0.7, mb: 1 }}>
-            <CardActionArea>
+            <CardActionArea onClick={handleOpen}>
                 <Typography
                     variant="overline"
                     color="text.secondary"
@@ -26,7 +35,6 @@ const ThreadUI: React.FC<Thread> = (thread: Thread) => {
                         {thread.thread_body}
                     </Typography>
                 </CardContent>
-                <ThreadPopup {...thread} />
             </CardActionArea>
             <CardActions>
                 <Button size="small" color="primary">
