@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Modal, Button, Typography } from '@mui/material';
+import { Box, Modal } from '@mui/material';
 import Thread from '../types/Thread';
 
 const ThreadPopup: React.FC<Thread> = (thread: Thread) => {

@@ -2,7 +2,7 @@ import React from 'react';
 import {
     Card, CardContent, CardActionArea, CardActions, Button, Typography, Box, Modal
 } from '@mui/material';
-import ThreadPopup from './ThreadPopup';
+import ThreadPopup from './thread-popup';
 import Thread from '../types/Thread';
 
 const ThreadUI: React.FC<Thread> = (thread: Thread) => {

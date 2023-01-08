@@ -6,10 +6,9 @@ import './index.css'
 import Root from './routes/root';
 import ErrorPage from './routes/error-page';
 import Home from './routes/home'
-import ThreadUI from './ui/ThreadUI';
+import ThreadUI from './ui/thread-ui';
 
 import Thread from './types/Thread';
-
 
 const testThread: Thread = {
   thread_id:      1,
@@ -22,6 +21,7 @@ const testThread: Thread = {
   thread_body:    "Bao babababa Bao bao baobao BANG" +
                   "Mystical Baobab Tree Moment",
 };
+
 const router = createBrowserRouter([
   {
     path: "/",

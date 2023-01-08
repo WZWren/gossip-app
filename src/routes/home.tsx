@@ -2,7 +2,7 @@ import React from 'react';
 import thread_list from '../thread_list.json';
 import Thread from '../types/Thread';
 
-import ThreadUI from '../ui/ThreadUI';
+import ThreadUI from '../ui/thread-ui';
 
 const Home: React.FC = () => {
     const local_thread: Thread[] = thread_list.thread;
