@@ -5,8 +5,8 @@ type Thread = {
     user_id:        number;
     tag_id:         number;
     thread_title:   string;
-    thread_date:    Date;
-    thread_upd:     Date;
+    thread_date:    string;
+    thread_upd:     string;
     thread_cmmt_no: number;
     thread_body:    string;
 }
