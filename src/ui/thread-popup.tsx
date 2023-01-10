@@ -1,53 +1,121 @@
 import React from 'react';
-import { Box, Modal, Typography } from '@mui/material';
-import Thread from '../types/Thread';
-
+import {
+    Dialog, Typography, DialogTitle, DialogContent,
+    DialogActions, Button, Box, TextField, IconButton } from '@mui/material';
+import { Send } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { close_thread } from '../features/thread-popup-slice';
-
-const style = {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 0.8,
-    bgcolor: 'text.primary',
-    boxShadow: 15,
-    p: 4,
-};
+import {
+    close_thread,
+    close_reply_box,
+    open_reply_box,
+    add_comment } from '../features/thread-popup-slice';
+import CommentUI from './comment-ui';
+import { default as Thread, is_empty_thread } from '../types/Thread';
+import Cmmt from '../types/Comment';
 
 const ThreadPopup: React.FC = () => {
     const thread = useAppSelector((state) => state.thread_popup.thread);
-    const isOpen = useAppSelector((state) => state.thread_popup.isPopupOpen);
+    const isPopupOpen = useAppSelector((state) => state.thread_popup.isPopupOpen);
+    const cmmt_list = useAppSelector((state) => state.thread_popup.cmmt_list);
+    const isReplyOpen =
+        useAppSelector((state) => state.thread_popup.isReplyBoxOpen);
     const dispatch = useAppDispatch();
 
-    function handleClose(event: {}, reason: "backdropClick" | "escapeKeyDown") {
-        if (reason === "backdropClick") {
-            console.log(reason);
-        } else {
-            dispatch(close_thread());
-        }
+    // create a local state to fetch the comment string from the textbox
+    const [comment, setComment] = React.useState("");
+
+    function handleClose() {
+        dispatch(close_thread());
+    }
+
+    function handleOpenReply() {
+        dispatch(open_reply_box());
+    }
+
+    function handleCloseReply() {
+        dispatch(close_reply_box());
+    }
+
+    function handleNewCmmt(e: React.FormEvent<HTMLFormElement>) {
+        // event prevented from posting.
+        e.preventDefault();
+        dispatch(add_comment(
+            {
+                cmmt_id:    9,
+                user_id:    1,
+                thread_id:  1,
+                cmmt_date:  "",
+                cmmt_upd:   "",
+                cmmt_seq:   3,
+                cmmt_body: comment,
+            }
+        ));
+        setComment("");
     }
 
     return (
         <>
-        <Modal
-            open={isOpen}
+        <Dialog
+            open={isPopupOpen}
             onClose={handleClose}
-            aria-labelledby="thread-title"
-            aria-describedby="thread-rest"
+            scroll="body"
+            fullWidth
+            maxWidth='lg'
         >
-            <Box sx={style}>
-                <Typography id="thread-title" variant="h3" gutterBottom>
+            <DialogTitle id="thread-title" variant="h3" align="center">
                     {thread.thread_title}
-                </Typography>
-                <Typography
-                    id="thread-rest" variant="h6" component="p" gutterBottom
+                </DialogTitle>
+                <Typography align="center" id="thread-rest"
+                    variant="h6" component="p" gutterBottom
                 >
                     {thread.thread_body}
                 </Typography>
-            </Box>
-        </Modal>
+                <Typography align="center" id="thread-rest"
+                    variant="overline" component="p" gutterBottom
+                >
+                    By user: {thread.user_id} / Posted on {thread.thread_date} /
+                    Last updated {thread.thread_upd}
+                </Typography>
+                <DialogContent dividers>
+                    <DialogActions sx={{ justifyContent: "space-between" }}>
+                        <Button onClick={handleClose}>Close</Button>
+                        <Button>Delete</Button>
+                        <Button>Edit</Button>
+                        {isReplyOpen ? (
+                            <Button onClick={handleCloseReply}>
+                                Discard reply...
+                            </Button>
+                        ) : (
+                            <Button onClick={handleOpenReply}>
+                                Type a reply...
+                            </Button>
+                        )}
+                    </DialogActions>
+                    {isReplyOpen ? (
+                    <Box component="form" onSubmit={e => handleNewCmmt(e)}>
+                        <TextField
+                            id="user-comment"
+                            placeholder="Leave a comment!"
+                            multiline
+                            rows={6}
+                            fullWidth
+                            autoFocus
+                            value={comment}
+                            onChange={e => setComment(e.target.value)}
+                            InputProps={{
+                                endAdornment:
+                                <IconButton aria-label="Reply" type="submit">
+                                    <Send/>
+                                </IconButton>
+                            }}
+                        />
+                    </Box>
+                    ) : (<> </>) }
+                </DialogContent>
+                {cmmt_list.map(elem => (
+                    <CommentUI key={elem.cmmt_id} {...elem}/>
+                ))}
+        </Dialog>
         </>
     );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Card, CardContent, CardActionArea, CardActions, Button, Typography, Box, Modal
+    Card, CardContent, CardActionArea, CardActions, Button, Typography
 } from '@mui/material';
 import Thread from '../types/Thread';
 
