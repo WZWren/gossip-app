@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Dialog, Typography, DialogTitle, DialogContent,
+    Dialog, Typography, DialogTitle, DialogContent, Collapse,
     DialogActions, Button, Box, TextField, IconButton } from '@mui/material';
 import { Send } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
@@ -53,6 +53,9 @@ const ThreadPopup: React.FC = () => {
         setComment("");
     }
 
+    /**
+     * @Line113 !comment.replace returns false if it only consists of whitespace
+     */
     return (
         <>
         <Dialog
@@ -91,26 +94,30 @@ const ThreadPopup: React.FC = () => {
                             </Button>
                         )}
                     </DialogActions>
-                    {isReplyOpen ? (
-                    <Box component="form" onSubmit={e => handleNewCmmt(e)}>
-                        <TextField
-                            id="user-comment"
-                            placeholder="Leave a comment!"
-                            multiline
-                            rows={6}
-                            fullWidth
-                            autoFocus
-                            value={comment}
-                            onChange={e => setComment(e.target.value)}
-                            InputProps={{
-                                endAdornment:
-                                <IconButton aria-label="Reply" type="submit">
-                                    <Send/>
-                                </IconButton>
-                            }}
-                        />
-                    </Box>
-                    ) : (<> </>) }
+                    <Collapse in={isReplyOpen}>
+                        <Box component="form" onSubmit={e => handleNewCmmt(e)}>
+                            <TextField
+                                id="user-comment"
+                                placeholder="Leave a comment!"
+                                multiline
+                                rows={6}
+                                fullWidth
+                                autoFocus
+                                value={comment}
+                                onChange={e => setComment(e.target.value)}
+                                InputProps={{
+                                    endAdornment:
+                                        <IconButton
+                                            aria-label="Reply"
+                                            type="submit"
+                                            disabled={!comment.replace(/ *\n*/g,"")}
+                                        >
+                                            <Send/>
+                                        </IconButton>
+                                }}
+                            />
+                        </Box>
+                    </Collapse>
                 </DialogContent>
                 {cmmt_list.map(elem => (
                     <CommentUI key={elem.cmmt_id} {...elem}/>
