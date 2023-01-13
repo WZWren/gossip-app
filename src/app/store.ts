@@ -7,13 +7,18 @@
 
 // no {} for counterReducer as it is the default.
 
-import { configureStore } from '@reduxjs/toolkit';
+import {
+	Action, Dispatch, Middleware,
+	MiddlewareAPI, configureStore
+} from '@reduxjs/toolkit';
 import thread_popupReducer from '../features/thread-popup-slice';
+import userSliceReducer, { userActions } from '../features/user-slice';
 
 // configureStore combines reducers automatically when we pass in objects
 export const store = configureStore({
 	reducer: {
 		thread_popup: thread_popupReducer,
+		user: userSliceReducer,
 	},
 });
 

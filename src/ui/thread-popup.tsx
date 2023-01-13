@@ -4,11 +4,7 @@ import {
     DialogActions, Button, Box, TextField, IconButton } from '@mui/material';
 import { Send } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import {
-    close_thread,
-    close_reply_box,
-    open_reply_box,
-    add_comment } from '../features/thread-popup-slice';
+import { threadpopupActions } from '../features/thread-popup-slice';
 import CommentUI from './comment-ui';
 import { default as Thread, is_empty_thread } from '../types/Thread';
 import Cmmt from '../types/Comment';
@@ -25,21 +21,21 @@ const ThreadPopup: React.FC = () => {
     const [comment, setComment] = React.useState("");
 
     function handleClose() {
-        dispatch(close_thread());
+        dispatch(threadpopupActions.close_thread());
     }
 
     function handleOpenReply() {
-        dispatch(open_reply_box());
+        dispatch(threadpopupActions.open_reply_box());
     }
 
     function handleCloseReply() {
-        dispatch(close_reply_box());
+        dispatch(threadpopupActions.close_reply_box());
     }
 
     function handleNewCmmt(e: React.FormEvent<HTMLFormElement>) {
         // event prevented from posting.
         e.preventDefault();
-        dispatch(add_comment(
+        dispatch(threadpopupActions.add_comment(
             {
                 cmmt_id:    9,
                 user_id:    1,

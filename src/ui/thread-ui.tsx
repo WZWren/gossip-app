@@ -5,14 +5,14 @@ import {
 import Thread from '../types/Thread';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { open_thread } from '../features/thread-popup-slice';
+import { threadpopupActions } from '../features/thread-popup-slice';
 
 const ThreadUI: React.FC<Thread> = (thread: Thread) => {
     const isOpen = useAppSelector((state) => state.thread_popup.isPopupOpen);
     const dispatch = useAppDispatch();
 
     const handleOpen = () => {
-        dispatch(open_thread(thread));
+        dispatch(threadpopupActions.open_thread(thread));
     }
 
     return (

@@ -24,7 +24,7 @@ const initialState: popupState = {
     cmmt_list: []
 }
 
-const thread_popupSlice = createSlice({
+const threadpopupSlice = createSlice({
     name: "thread_popup",
     initialState,
     reducers: {
@@ -70,7 +70,5 @@ const thread_popupSlice = createSlice({
     }
 });
 
-export const {
-    open_thread, close_thread,
-    open_reply_box, close_reply_box, add_comment } = thread_popupSlice.actions;
-export default thread_popupSlice.reducer;
+export const threadpopupActions = threadpopupSlice.actions;
+export default threadpopupSlice.reducer;
