@@ -3,6 +3,10 @@ import {
     Box, Paper, Button, TextField, Typography,
     Checkbox, FormControlLabel, FormGroup
 } from '@mui/material';
+import { userActions } from "../features/user-slice";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import User from "../types/User";
 
 const LoginPage: React.FC = () => {
     /**
@@ -13,7 +17,21 @@ const LoginPage: React.FC = () => {
      * into the state.
      * */
     const [register, setRegister] = React.useState(false);
-    
+    const [username, setUsername] = React.useState("");
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
+    const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
+
+    function handleLogin(e: React.FormEvent<HTMLFormElement>): void {
+        e.preventDefault();
+        dispatch(userActions.user_login({
+            user_id: 3,
+            user_name: username
+        }));
+        navigate("/../home");
+    }
+
     return (
         <>
             <Paper sx={{ display: "flex", width: 0.7, justifyContent: "center" }}>
@@ -26,14 +44,20 @@ const LoginPage: React.FC = () => {
                         gap: 1,
                         justifyContent:"center"
                     }}
+                    onSubmit={e => handleLogin(e)}
                 >
                     <Typography variant="h3" align="center" gutterBottom>
                         Sign in...
+                    </Typography>
+                    <Typography variant="body1" align="center" gutterBottom>
+                        { isLoggedIn ? "You are already logged in." : "" }
                     </Typography>
                     <TextField
                         id="username-field"
                         variant="outlined"
                         label="Username"
+                        value={username}
+                        onChange={e => setUsername(e.target.value)}
                         fullWidth
                         required
                     />
@@ -55,7 +79,10 @@ const LoginPage: React.FC = () => {
                             label="Register for an account instead."
                         />
                     </FormGroup>
-                    <Button variant="contained">Go!</Button>
+                    <Button
+                        variant="contained"
+                        type="submit"
+                        disabled={isLoggedIn}>Go!</Button>
                 </Box>
             </Paper>
         </>

@@ -15,6 +15,8 @@ const ThreadPopup: React.FC = () => {
     const cmmt_list = useAppSelector((state) => state.thread_popup.cmmt_list);
     const isReplyOpen =
         useAppSelector((state) => state.thread_popup.isReplyBoxOpen);
+    const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
+    const currentUser = useAppSelector((state) => state.user.user);
     const dispatch = useAppDispatch();
 
     // create a local state to fetch the comment string from the textbox
@@ -38,7 +40,7 @@ const ThreadPopup: React.FC = () => {
         dispatch(threadpopupActions.add_comment(
             {
                 cmmt_id:    9,
-                user_id:    1,
+                user_id:    currentUser.user_id,
                 thread_id:  1,
                 cmmt_date:  "",
                 cmmt_upd:   "",
@@ -78,19 +80,19 @@ const ThreadPopup: React.FC = () => {
                 <DialogContent dividers>
                     <DialogActions sx={{ justifyContent: "space-between" }}>
                         <Button onClick={handleClose}>Close</Button>
-                        <Button>Delete</Button>
-                        <Button>Edit</Button>
+                        <Button disabled={!isLoggedIn}>Delete</Button>
+                        <Button disabled={!isLoggedIn}>Edit</Button>
                         {isReplyOpen ? (
                             <Button onClick={handleCloseReply}>
                                 Discard reply...
                             </Button>
                         ) : (
-                            <Button onClick={handleOpenReply}>
+                            <Button onClick={handleOpenReply} disabled={!isLoggedIn}>
                                 Type a reply...
                             </Button>
                         )}
                     </DialogActions>
-                    <Collapse in={isReplyOpen}>
+                    <Collapse in={ isReplyOpen && isLoggedIn }>
                         <Box component="form" onSubmit={e => handleNewCmmt(e)}>
                             <TextField
                                 id="user-comment"

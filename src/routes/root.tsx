@@ -5,6 +5,8 @@ import {
     Toolbar
 } from '@mui/material';
 import { deepPurple } from "@mui/material/colors";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { userActions } from "../features/user-slice";
 
 const theme = createTheme({
     palette: {
@@ -19,12 +21,19 @@ const theme = createTheme({
 
 const Root: React.FC = () => {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
+    const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
+    const user = useAppSelector((state) => state.user.user);
 
     function handleHome() {
         navigate("/home");
     }
     function handleLogin() {
         navigate("/login");
+    }
+    function handleLogout(): void {
+        dispatch(userActions.user_logout());
     }
 
     return (
@@ -47,9 +56,17 @@ const Root: React.FC = () => {
                         Ignored
                     </Button>
                     <Box sx={{ flexGrow: 1 }} />
-                    <Box sx={{ flexGrow: 1 }} >
-                        <Button size="large" color="secondary" onClick={handleLogin}>
-                            Sign in...
+                    <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
+                        <Typography variant="body2"> {
+                            isLoggedIn ? "Welcome, " + user.user_name
+                                       : ""
+                        } </Typography>
+                        <Button
+                            size="large"
+                            color="secondary"
+                            onClick={ isLoggedIn ? handleLogout : handleLogin }
+                        >
+                            { isLoggedIn ? "Log out?" : "Sign in..." }
                         </Button>
                     </Box>
                 </Toolbar>
