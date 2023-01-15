@@ -8,10 +8,12 @@ import Thread from "../types/Thread";
 
 interface persistentState {
     localThread: Thread[];
+    isHandlingPost: boolean;
 }
 
 const initialState: persistentState = {
     localThread: [],
+    isHandlingPost: false,
 }
 
 const persistentSlice = createSlice({
@@ -20,7 +22,16 @@ const persistentSlice = createSlice({
     reducers: {
         populate(state, action: PayloadAction<Thread[]>) {
             state.localThread = action.payload;
-        }
+        },
+        /**
+         * locks certain functions of the frontend when running through fetches
+         * */
+        lock(state) {
+            state.isHandlingPost = true;
+        },
+        unlock(state) {
+            state.isHandlingPost = false;
+        },
     }
 });
 

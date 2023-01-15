@@ -10,7 +10,7 @@ import { threadpopupActions } from '../features/thread-popup-slice';
 import * as backend from "../backend-hooks";
 
 const ThreadUI: React.FC<Thread> = (thread: Thread) => {
-    const isOpen = useAppSelector((state) => state.thread_popup.isPopupOpen);
+    const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
     const dispatch = useAppDispatch();
 
     const handleOpen = async () => {
@@ -53,10 +53,10 @@ const ThreadUI: React.FC<Thread> = (thread: Thread) => {
                 <Button size="small" color="primary">
                     Comments ({thread.thread_cmmt_no})
                 </Button>
-                <Button size="small" color="primary">
+                <Button size="small" color="primary" disabled={!isLoggedIn}>
                     Bookmark
                 </Button>
-                <Button size="small" color="primary">
+                <Button size="small" color="primary" disabled={!isLoggedIn}>
                     Ignore
                 </Button>
             </CardActions>

@@ -14,6 +14,7 @@ import {
 import threadpopupReducer from '../features/thread-popup-slice';
 import userSliceReducer from '../features/user-slice';
 import persistentReducer from '../features/persistent-slice';
+import newthreadReducer from '../features/new-thread-slice';
 
 // configureStore combines reducers automatically when we pass in objects
 export const store = configureStore({
@@ -21,6 +22,7 @@ export const store = configureStore({
 		thread_popup: threadpopupReducer,
 		user: userSliceReducer,
 		persistent: persistentReducer,
+		new_thread: newthreadReducer,
 	},
 });
 

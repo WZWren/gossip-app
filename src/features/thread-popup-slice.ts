@@ -8,18 +8,16 @@ import Thread from "../types/Thread";
 import { null_thread, is_empty_thread } from "../types/Thread";
 import Cmmt from "../types/Comment";
 
-interface popupState {
+interface threadpopupState {
     isPopupOpen: boolean;
     isReplyBoxOpen: boolean;
-    isHandlingPost: boolean;
     thread: Thread;
     cmmt_list: Cmmt[];
 }
 
-const initialState: popupState = {
+const initialState: threadpopupState = {
     isPopupOpen: false,
     isReplyBoxOpen: false,
-    isHandlingPost: false,
     thread: null_thread,
     cmmt_list: []
 }
@@ -45,18 +43,7 @@ const threadpopupSlice = createSlice({
             state.cmmt_list = action.payload;
         },
         /**
-         * mainly locks the reply button.
-         * */
-        lock(state) {
-            state.isHandlingPost = true;
-        },
-        unlock(state) {
-            state.isHandlingPost = false;
-        },
-        /**
          * closes the thread popup, resetting its variables internally.
-         * this does not affect isHandlingPost; this only resets if the post
-         * is handled.
          * */
         close_thread(state) {
             state.isPopupOpen = false;

@@ -5,6 +5,7 @@ import {
 import { Send } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { threadpopupActions } from '../features/thread-popup-slice';
+import { persistentActions } from '../features/persistent-slice';
 import CommentUI from './comment-ui';
 import dateToString from '../helpers/date-to-string';
 import * as backend from '../backend-hooks';
@@ -15,7 +16,7 @@ const ThreadPopup: React.FC = () => {
     const thread = useAppSelector((state) => state.thread_popup.thread);
     const isPopupOpen = useAppSelector((state) => state.thread_popup.isPopupOpen);
     const cmmt_list = useAppSelector((state) => state.thread_popup.cmmt_list);
-    const isLocked = useAppSelector((state) => state.thread_popup.isHandlingPost);
+    const isLocked = useAppSelector((state) => state.persistent.isHandlingPost);
     const isReplyOpen =
         useAppSelector((state) => state.thread_popup.isReplyBoxOpen);
     const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
@@ -40,7 +41,7 @@ const ThreadPopup: React.FC = () => {
     async function handleNewCmmt(e: React.FormEvent<HTMLFormElement>) {
         // event prevented from posting.
         e.preventDefault();
-        dispatch(threadpopupActions.lock());
+        dispatch(persistentActions.lock());
 
         await fetch(backend.PostCommentBackend, {
             method: "POST",
@@ -66,7 +67,7 @@ const ThreadPopup: React.FC = () => {
         }).then((result) => {
             dispatch(threadpopupActions.populate(result));
         });
-        dispatch(threadpopupActions.unlock());
+        dispatch(persistentActions.unlock());
     }
 
     /**
@@ -99,8 +100,6 @@ const ThreadPopup: React.FC = () => {
                 <DialogContent dividers>
                     <DialogActions sx={{ justifyContent: "space-between" }}>
                         <Button onClick={handleClose}>Close</Button>
-                        <Button disabled={!isLoggedIn}>Delete</Button>
-                        <Button disabled={!isLoggedIn}>Edit</Button>
                         {isReplyOpen ? (
                             <Button onClick={handleCloseReply}>
                                 Discard reply...

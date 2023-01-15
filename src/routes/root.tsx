@@ -41,7 +41,12 @@ const Root: React.FC = () => {
     function handleLogin(user: User) {
         dispatch(userActions.user_login(user));
     }
-    function handleLogout(): void {
+    async function handleLogout() {
+        await fetch(backend.LogoutBackend, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include",
+        });
         dispatch(userActions.user_logout());
     }
 
@@ -52,9 +57,10 @@ const Root: React.FC = () => {
                     headers: {"Content-Type": "application/json"},
                     credentials: "include",
                 }).then((response) => response.json()).then((result) => {
-                    if (result != undefined) {
+                    if (result.message == undefined) {
                         handleLogin(result);
-                }})
+                    }
+                })
             }
         )();
     }, [loginAttempted]);
