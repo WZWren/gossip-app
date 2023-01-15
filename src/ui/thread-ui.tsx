@@ -3,15 +3,28 @@ import {
     Card, CardContent, CardActionArea, CardActions, Button, Typography
 } from '@mui/material';
 import Thread from '../types/Thread';
+import dateToString from '../helpers/date-to-string';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { threadpopupActions } from '../features/thread-popup-slice';
+import * as backend from "../backend-hooks";
 
 const ThreadUI: React.FC<Thread> = (thread: Thread) => {
     const isOpen = useAppSelector((state) => state.thread_popup.isPopupOpen);
     const dispatch = useAppDispatch();
 
-    const handleOpen = () => {
+    const handleOpen = async () => {
+        await fetch(backend.GetCommentBackend, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                thread_id: thread.thread_id
+            })
+        }).then((response) => {
+            return response.json();
+        }).then((result) => {
+            dispatch(threadpopupActions.populate(result));
+        });
         dispatch(threadpopupActions.open_thread(thread));
     }
 
@@ -24,8 +37,8 @@ const ThreadUI: React.FC<Thread> = (thread: Thread) => {
                     display="block"
                     align="center"
                 >
-                    Posted on {thread.thread_date} / 
-                    Last updated {thread.thread_upd}
+                    Posted on {dateToString(thread.thread_date)} / 
+                    Last updated {dateToString(thread.thread_upd)}
                 </Typography>
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">

@@ -7,12 +7,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Thread from "../types/Thread";
 import { null_thread, is_empty_thread } from "../types/Thread";
 import Cmmt from "../types/Comment";
-// placeholder JSON for testing purposes
-import cmmt_list from '../cmmt_list.json';
 
 interface popupState {
     isPopupOpen: boolean;
     isReplyBoxOpen: boolean;
+    isHandlingPost: boolean;
     thread: Thread;
     cmmt_list: Cmmt[];
 }
@@ -20,6 +19,7 @@ interface popupState {
 const initialState: popupState = {
     isPopupOpen: false,
     isReplyBoxOpen: false,
+    isHandlingPost: false,
     thread: null_thread,
     cmmt_list: []
 }
@@ -31,17 +31,32 @@ const threadpopupSlice = createSlice({
         /**
          * opens the thread popup, initializes its elements and temporarily
          * holding onto the thread and comment data for the popup.
-         * @TODO: in the final product, the comment list will be fetched here.
          * */
         open_thread(state, action: PayloadAction<Thread>) {
             // note to self: the mutation here only works because of redux toolkit
             // due to the Immer library.
             state.thread = action.payload;
             state.isPopupOpen = true;
-            state.cmmt_list = cmmt_list.comment;
+        },
+        /**
+         * populates the comment array with the fetched list from the backend.
+         * */
+        populate(state, action: PayloadAction<Cmmt[]>) {
+            state.cmmt_list = action.payload;
+        },
+        /**
+         * mainly locks the reply button.
+         * */
+        lock(state) {
+            state.isHandlingPost = true;
+        },
+        unlock(state) {
+            state.isHandlingPost = false;
         },
         /**
          * closes the thread popup, resetting its variables internally.
+         * this does not affect isHandlingPost; this only resets if the post
+         * is handled.
          * */
         close_thread(state) {
             state.isPopupOpen = false;

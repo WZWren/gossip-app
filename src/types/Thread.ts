@@ -5,8 +5,8 @@ type Thread = {
     user_id:        number;
     tag_id:         number;
     thread_title:   string;
-    thread_date:    string;
-    thread_upd:     string;
+    thread_date:    number;
+    thread_upd:     number;
     thread_cmmt_no: number;
     thread_body:    string;
 }
@@ -16,8 +16,8 @@ export const null_thread: Thread = {
     user_id:        0,
     tag_id:         0,
     thread_title:   "Oops! You aren't supposed to see this.",
-    thread_date:    "2000-01-01T00:00:00",
-    thread_upd:     "2000-01-01T00:00:00",
+    thread_date:    946728000,
+    thread_upd:     946728000,
     thread_cmmt_no: 0,
     thread_body:    "We are working hard to fix this!",
 }

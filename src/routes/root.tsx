@@ -2,11 +2,13 @@ import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import {
     Box, Button, Typography, AppBar, createTheme, ThemeProvider,
-    Toolbar
+    Toolbar, Fade
 } from '@mui/material';
 import { deepPurple } from "@mui/material/colors";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { userActions } from "../features/user-slice";
+import * as backend from "../backend-hooks";
+import User from "../types/User";
 
 const theme = createTheme({
     palette: {
@@ -24,17 +26,38 @@ const Root: React.FC = () => {
     const dispatch = useAppDispatch();
 
     const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
+    const loginAttempted = useAppSelector((state) => state.user.loginAttemptListener);
     const user = useAppSelector((state) => state.user.user);
 
-    function handleHome() {
+    function handleHomeNav() {
         navigate("/home");
     }
-    function handleLogin() {
+    function handleLoginNav() {
         navigate("/login");
+    }
+    function handleRegisterNav() {
+        navigate("/register");
+    }
+    function handleLogin(user: User) {
+        dispatch(userActions.user_login(user));
     }
     function handleLogout(): void {
         dispatch(userActions.user_logout());
     }
+
+    React.useEffect(() => {
+        (
+            async () => {
+                await fetch(backend.AuthBackend, {
+                    headers: {"Content-Type": "application/json"},
+                    credentials: "include",
+                }).then((response) => response.json()).then((result) => {
+                    if (result != undefined) {
+                        handleLogin(result);
+                }})
+            }
+        )();
+    }, [loginAttempted]);
 
     return (
         <ThemeProvider theme={theme}>
@@ -44,7 +67,7 @@ const Root: React.FC = () => {
             <AppBar position="relative" sx={{marginBottom: 1}} color="primary">
                 <Toolbar>
                     <Box sx={{ flexGrow: 1 }} />
-                    <Button size="large" color="secondary" onClick={handleHome}>
+                    <Button size="large" color="secondary" onClick={handleHomeNav}>
                         Homepage
                     </Button>
                     <Box sx={{ flexGrow: 0.2 }} />
@@ -56,18 +79,31 @@ const Root: React.FC = () => {
                         Ignored
                     </Button>
                     <Box sx={{ flexGrow: 1 }} />
-                    <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
-                        <Typography variant="body2"> {
-                            isLoggedIn ? "Welcome, " + user.user_name
-                                       : ""
-                        } </Typography>
+                    <Box sx={{ flexGrow: 0.5, display: "flex", alignItems: "center" }}>
+                        <Fade in={isLoggedIn}>
+                            <Typography variant="body2">
+                                { "Welcome, " + user.user_name }
+                            </Typography>
+                        </Fade>
+                    </Box>
+                    <Box sx={{ flexGrow: 0.5, display: "flex", alignItems: "center" }}>
                         <Button
                             size="large"
                             color="secondary"
-                            onClick={ isLoggedIn ? handleLogout : handleLogin }
+                            onClick={ isLoggedIn ? handleLogout : handleLoginNav }
                         >
-                            { isLoggedIn ? "Log out?" : "Sign in..." }
+                            { isLoggedIn ? "Logout?" : "Login..." }
                         </Button>
+                        <Fade in={!isLoggedIn}>
+                            <Button
+                                size="large"
+                                color="secondary"
+                                hidden={isLoggedIn}
+                                onClick={handleRegisterNav}
+                            >
+                                Register
+                            </Button>
+                        </Fade>
                     </Box>
                 </Toolbar>
             </AppBar>

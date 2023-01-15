@@ -2,6 +2,7 @@ import React from 'react';
 import {
     Card, CardContent, CardActions, Button, Typography
 } from '@mui/material';
+import dateToString from '../helpers/date-to-string';
 import Cmmt from '../types/Comment';
 
 const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
@@ -13,8 +14,8 @@ const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
                     display="block"
                     align="center"
                 >
-                    Posted on {cmmt.cmmt_date} / 
-                    Last updated {cmmt.cmmt_upd}
+                    Posted on {dateToString(cmmt.cmmt_date)} / 
+                    Last updated {dateToString(cmmt.cmmt_upd)}
                 </Typography>
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">

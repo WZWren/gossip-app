@@ -6,6 +6,8 @@ import { Send } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { threadpopupActions } from '../features/thread-popup-slice';
 import CommentUI from './comment-ui';
+import dateToString from '../helpers/date-to-string';
+import * as backend from '../backend-hooks';
 import { default as Thread, is_empty_thread } from '../types/Thread';
 import Cmmt from '../types/Comment';
 
@@ -13,6 +15,7 @@ const ThreadPopup: React.FC = () => {
     const thread = useAppSelector((state) => state.thread_popup.thread);
     const isPopupOpen = useAppSelector((state) => state.thread_popup.isPopupOpen);
     const cmmt_list = useAppSelector((state) => state.thread_popup.cmmt_list);
+    const isLocked = useAppSelector((state) => state.thread_popup.isHandlingPost);
     const isReplyOpen =
         useAppSelector((state) => state.thread_popup.isReplyBoxOpen);
     const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
@@ -34,25 +37,40 @@ const ThreadPopup: React.FC = () => {
         dispatch(threadpopupActions.close_reply_box());
     }
 
-    function handleNewCmmt(e: React.FormEvent<HTMLFormElement>) {
+    async function handleNewCmmt(e: React.FormEvent<HTMLFormElement>) {
         // event prevented from posting.
         e.preventDefault();
-        dispatch(threadpopupActions.add_comment(
-            {
-                cmmt_id:    9,
-                user_id:    currentUser.user_id,
-                thread_id:  1,
-                cmmt_date:  "",
-                cmmt_upd:   "",
-                cmmt_seq:   3,
-                cmmt_body: comment,
-            }
-        ));
+        dispatch(threadpopupActions.lock());
+
+        await fetch(backend.PostCommentBackend, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                user_id: currentUser.user_id,
+                thread_id: thread.thread_id,
+                cmmt_body: comment
+            })
+        });
+        
         setComment("");
+        dispatch(threadpopupActions.close_reply_box());
+
+        await fetch(backend.GetCommentBackend, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                thread_id: thread.thread_id
+            })
+        }).then((response) => {
+            return response.json();
+        }).then((result) => {
+            dispatch(threadpopupActions.populate(result));
+        });
+        dispatch(threadpopupActions.unlock());
     }
 
     /**
-     * @Line113 !comment.replace returns false if it only consists of whitespace
+     * !comment.replace returns false if it only consists of whitespace
      */
     return (
         <>
@@ -74,8 +92,9 @@ const ThreadPopup: React.FC = () => {
                 <Typography align="center" id="thread-rest"
                     variant="overline" component="p" gutterBottom
                 >
-                    By user: {thread.user_id} / Posted on {thread.thread_date} /
-                    Last updated {thread.thread_upd}
+                    By user: {thread.user_id} / 
+                    Posted on {dateToString(thread.thread_date)} / 
+                    Last updated {dateToString(thread.thread_upd)}
                 </Typography>
                 <DialogContent dividers>
                     <DialogActions sx={{ justifyContent: "space-between" }}>
@@ -108,7 +127,9 @@ const ThreadPopup: React.FC = () => {
                                         <IconButton
                                             aria-label="Reply"
                                             type="submit"
-                                            disabled={!comment.replace(/ *\n*/g,"")}
+                                            disabled={
+                                                !comment.replace(/ *\n*/g,"") || isLocked
+                                            }
                                         >
                                             <Send/>
                                         </IconButton>

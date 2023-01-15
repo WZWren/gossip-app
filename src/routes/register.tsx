@@ -4,12 +4,12 @@ import {
     Checkbox, FormControlLabel, FormGroup
 } from '@mui/material';
 import { userActions } from "../features/user-slice";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { redirect, useNavigate } from "react-router-dom";
+import { useAppSelector } from "../app/hooks";
 import * as backend from "../backend-hooks";
 import User from "../types/User";
 
-const LoginPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
     /**
      * we handle the state of some components locally for this instance -
      * there is no reason to communicate the state of the these components
@@ -20,25 +20,22 @@ const LoginPage: React.FC = () => {
     const [user_name, setUsername] = React.useState("");
     const [user_pass, setPassword] = React.useState("");
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
 
     const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
 
-    async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        await fetch(backend.LoginBackend, {
+        await fetch(backend.RegisterBackend, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            credentials: "include",
             body: JSON.stringify({
                 user_name,
                 user_pass
             })
         }).then((response) => {
             if (response.ok) {
-                dispatch(userActions.user_login_attempted());
-                navigate("/../home");
+                navigate("/../login");
             } else {
                 return response.json();
             }
@@ -64,10 +61,10 @@ const LoginPage: React.FC = () => {
                         gap: 1,
                         justifyContent:"center"
                     }}
-                    onSubmit={e => handleLogin(e)}
+                    onSubmit={e => handleRegister(e)}
                 >
                     <Typography variant="h3" align="center" gutterBottom>
-                        Sign in...
+                        Register
                     </Typography>
                     <Typography
                         variant="body1"
@@ -75,7 +72,7 @@ const LoginPage: React.FC = () => {
                         color="error.main"
                         gutterBottom
                     >
-                        { error_message }
+                        {error_message}
                     </Typography>
                     <TextField
                         id="username-field"
@@ -96,14 +93,11 @@ const LoginPage: React.FC = () => {
                         fullWidth
                         required
                     />
-                    <Button
-                        variant="contained"
-                        type="submit"
-                        disabled={isLoggedIn}>Go!</Button>
+                    <Button variant="contained" type="submit">Register</Button>
                 </Box>
             </Paper>
         </>
     );
 }
 
-export default LoginPage;
+export default RegisterPage;

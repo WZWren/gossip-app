@@ -8,6 +8,7 @@ import Root from './routes/root';
 import ErrorPage from './routes/error-page';
 import Home from './routes/home';
 import LoginPage from './routes/login';
+import RegisterPage from './routes/register';
 
 import Thread from './types/Thread';
 import { store } from './app/store';
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <LoginPage />,
+      },
+      {
+        path: "register",
+        element: <RegisterPage />
       }
     ],
   },

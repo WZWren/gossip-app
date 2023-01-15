@@ -12,11 +12,13 @@ import { empty_user, is_empty_user } from "../types/User";
 interface userState {
     isLoggedIn: boolean;
     user: User;
+    loginAttemptListener: number;
 }
 
 const initialState: userState = {
     isLoggedIn: false,
     user: empty_user,
+    loginAttemptListener: 0,
 }
 
 const userSlice = createSlice({
@@ -31,6 +33,9 @@ const userSlice = createSlice({
             state.user = empty_user;
             state.isLoggedIn = false;
         },
+        user_login_attempted(state) {
+            state.loginAttemptListener++;
+        }
     }
 });
 
