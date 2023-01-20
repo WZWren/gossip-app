@@ -3,6 +3,7 @@ import React from "react";
 type Thread = {
     thread_id:      number;
     user_id:        number;
+    user_name:      string;
     tag_id:         number;
     thread_title:   string;
     thread_date:    number;
@@ -14,12 +15,13 @@ type Thread = {
 export const null_thread: Thread = {
     thread_id:      0,
     user_id:        0,
+    user_name:      "",
     tag_id:         0,
-    thread_title:   "Oops! You aren't supposed to see this.",
+    thread_title:   "",
     thread_date:    946728000,
     thread_upd:     946728000,
     thread_cmmt_no: 0,
-    thread_body:    "We are working hard to fix this!",
+    thread_body:    "",
 }
 export function is_empty_thread(thread: Thread): boolean {
     return (thread == null_thread);

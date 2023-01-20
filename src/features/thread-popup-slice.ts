@@ -63,7 +63,6 @@ const threadpopupSlice = createSlice({
         },
         /**
          * add_comment will handle the addition of comments to the thread.
-         * @TODO: Implement comment handling in the backend.
          */
         add_comment(state, action: PayloadAction<Cmmt>) {
             state.cmmt_list.push(action.payload);

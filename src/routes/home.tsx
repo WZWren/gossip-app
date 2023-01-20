@@ -13,7 +13,8 @@ import NewThread from '../ui/new-thread';
 const Home: React.FC = () => {
     const dispatch = useAppDispatch();
     const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
-    const local_thread = useAppSelector((state) => state.persistent.localThread);
+    const localThread = useAppSelector((state) => state.persistent.localThread);
+    const ignoredThreads = useAppSelector((state) => state.settings.ignoreThreads);
 
     function populateStore(threads: Thread[]) {
         dispatch(persistentActions.populate(threads));
@@ -52,9 +53,11 @@ const Home: React.FC = () => {
                 </Button>
             </Collapse>
             <ThreadPopup />
-            {local_thread.map(elem => (
-                <ThreadUI key={elem.thread_id} {...elem}/>
-            ))}
+            {localThread.map(elem => {
+                if (ignoredThreads.indexOf(elem.thread_id) == -1) {
+                    return <ThreadUI key={elem.thread_id} {...elem}/>;
+                }
+            })}
         </>
     );
 };

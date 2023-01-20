@@ -48,6 +48,7 @@ const ThreadPopup: React.FC = () => {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 user_id: currentUser.user_id,
+                user_name: currentUser.user_name,
                 thread_id: thread.thread_id,
                 cmmt_body: comment
             })
@@ -93,7 +94,7 @@ const ThreadPopup: React.FC = () => {
                 <Typography align="center" id="thread-rest"
                     variant="overline" component="p" gutterBottom
                 >
-                    By user: {thread.user_id} / 
+                    By user: {thread.user_name} / 
                     Posted on {dateToString(thread.thread_date)} / 
                     Last updated {dateToString(thread.thread_upd)}
                 </Typography>

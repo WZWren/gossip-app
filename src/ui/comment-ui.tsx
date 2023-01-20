@@ -4,20 +4,33 @@ import {
 } from '@mui/material';
 import dateToString from '../helpers/date-to-string';
 import Cmmt from '../types/Comment';
-import { useAppSelector } from '../app/hooks';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
 import * as backend from '../backend-hooks';
+import { threadpopupActions } from '../features/thread-popup-slice';
+import { persistentActions } from '../features/persistent-slice';
 
 const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
     // if you aren't logged in, the userid is 0, which isn't a valid userid.
+    const dispatch = useAppDispatch();
     const currentUser = useAppSelector((state) => state.user.user);
     const isLocked = useAppSelector((state) => state.persistent.isHandlingPost);
     const isYourComment = (currentUser.user_id == cmmt.user_id);
 
     const [hide, setHide] = React.useState(false);
     const [isEdit, setIsEdit] = React.useState(false);
+    const [isDelete, setIsDelete] = React.useState(false);
     const [edit, setEdit] = React.useState(cmmt.cmmt_body);
 
-    async function handleDelete() {
+    function handleDelete() {
+        setIsDelete(true);
+    }
+
+    function handleCancelDelete() {
+        setIsDelete(false);
+    }
+
+    async function handleDeleteConfirm() {
+        dispatch(persistentActions.lock());
         await fetch(backend.DelCommentBackend, {
             method: "DELETE",
             headers: {"Content-Type": "application/json"},
@@ -25,7 +38,21 @@ const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
                 cmmt_id: cmmt.cmmt_id
             })
         });
-        setHide(true);
+
+        // fetch the refreshed comment list.
+        await fetch(backend.GetCommentBackend, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                thread_id: cmmt.thread_id
+            })
+        }).then((response) => {
+            return response.json();
+        }).then((result) => {
+            dispatch(threadpopupActions.populate(result));
+        });
+
+        dispatch(persistentActions.unlock());
     }
 
     function handleEdit() {
@@ -40,6 +67,7 @@ const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
     }
 
     async function handleEditConfirm() {
+        dispatch(persistentActions.lock());
         await fetch(backend.UpdCommentBackend, {
             method: "PATCH",
             headers: {"Content-Type": "application/json"},
@@ -48,6 +76,21 @@ const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
                 cmmt_body: edit
             })
         });
+
+        // fetch the refreshed comment list.
+        await fetch(backend.GetCommentBackend, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                thread_id: cmmt.thread_id
+            })
+        }).then((response) => {
+            return response.json();
+        }).then((result) => {
+            dispatch(threadpopupActions.populate(result));
+        });
+
+        dispatch(persistentActions.unlock());
         setHide(false);
         setIsEdit(false);
     }
@@ -66,10 +109,10 @@ const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
                 </Typography>
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                        {cmmt.user_id}
+                        {cmmt.user_name} says:
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        {edit}
+                    <Typography variant="body1" color="text.primary">
+                        {cmmt.cmmt_body}
                     </Typography>
                 </CardContent>
                 <CardActions>
@@ -77,16 +120,16 @@ const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
                         size="small"
                         color="primary"
                         disabled={!isYourComment}
-                        onClick={handleDelete}
+                        onClick={isDelete ? handleCancelDelete : handleDelete}
                     >
-                        Delete
+                        {isDelete ? "Maybe not..." : "Delete"}
                     </Button>
                     <Button
                         size="small"
-                        color="primary"
+                        color={isDelete ? "warning" : "primary"}
                         disabled={!isYourComment}
-                        onClick={handleEdit}>
-                        Edit
+                        onClick={isDelete ? handleDeleteConfirm : handleEdit}>
+                        {isDelete ? "Yes, I'm sure" : "Edit"}
                     </Button>
                 </CardActions>
             </Collapse>

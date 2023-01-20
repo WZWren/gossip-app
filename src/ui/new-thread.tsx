@@ -35,6 +35,7 @@ const NewThread: React.FC = () => {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 user_id: currentUser.user_id,
+                user_name: currentUser.user_name,
                 thread_title: title,
                 thread_body: body
             })
