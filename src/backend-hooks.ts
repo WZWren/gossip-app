@@ -8,11 +8,15 @@ export const LogoutBackend: RequestInfo =
     "http://localhost:8000/api/logout";
 export const AuthBackend: RequestInfo =
     "http://localhost:8000/api/user";
+export const GetUserNameBackend: RequestInfo =
+    "http://localhost:8000/api/user/name";
 
 export const GetThreadBackend: RequestInfo =
     "http://localhost:8000/api/thread/get";
 export const PostThreadBackend: RequestInfo =
     "http://localhost:8000/api/thread/post";
+export const SearchThreadBackend: RequestInfo =
+    "http://localhost:8000/api/thread/search";
 
 export const GetCommentBackend: RequestInfo = 
     "http://localhost:8000/api/comment/get";
@@ -27,3 +31,5 @@ export const GetTabsBackend: RequestInfo =
     "http://localhost:8000/api/tabs/get";
 export const PostTabsBackend: RequestInfo =
     "http://localhost:8000/api/tabs/post";
+export const DeleteTabsBackend: RequestInfo =
+    "http://localhost:8000/api/tabs/delete";

@@ -1,17 +1,21 @@
 import React from 'react';
+
 import {
     Dialog, Typography, DialogTitle, DialogContent, Collapse,
     DialogActions, Button, Box, TextField, IconButton } from '@mui/material';
 import { Send } from '@mui/icons-material';
+
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { threadpopupActions } from '../features/thread-popup-slice';
 import { persistentActions } from '../features/persistent-slice';
 import CommentUI from './comment-ui';
 import dateToString from '../helpers/date-to-string';
 import * as backend from '../backend-hooks';
-import { default as Thread, is_empty_thread } from '../types/Thread';
-import Cmmt from '../types/Comment';
 
+/**
+ * The Dialog handling the display of the thread.
+ * This handles the main thread, as well as comment handling and comment posting.
+ */
 const ThreadPopup: React.FC = () => {
     const thread = useAppSelector((state) => state.thread_popup.thread);
     const isPopupOpen = useAppSelector((state) => state.thread_popup.isPopupOpen);
@@ -25,6 +29,7 @@ const ThreadPopup: React.FC = () => {
 
     // create a local state to fetch the comment string from the textbox
     const [comment, setComment] = React.useState("");
+    const [name, setName] = React.useState("Unknown");
 
     function handleClose() {
         dispatch(threadpopupActions.close_thread());
@@ -71,6 +76,25 @@ const ThreadPopup: React.FC = () => {
         dispatch(persistentActions.unlock());
     }
 
+    // fetches the username of the thread.
+    React.useEffect(() => {
+        (
+            async () => {
+                await fetch(backend.GetUserNameBackend, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        user_id: thread.user_id
+                    })
+                }).then((response) => response.json()).then((result) => {
+                    if (result != undefined) {
+                        setName(result.user_name);
+                    }
+                })
+            }
+        )();
+    }, [thread]);
+
     /**
      * !comment.replace returns false if it only consists of whitespace
      */
@@ -94,7 +118,7 @@ const ThreadPopup: React.FC = () => {
                 <Typography align="center" id="thread-rest"
                     variant="overline" component="p" gutterBottom
                 >
-                    By user: {thread.user_name} / 
+                    By user: {name} / 
                     Posted on {dateToString(thread.thread_date)} / 
                     Last updated {dateToString(thread.thread_upd)}
                 </Typography>

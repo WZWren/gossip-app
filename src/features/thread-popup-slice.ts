@@ -5,7 +5,7 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Thread from "../types/Thread";
-import { null_thread, is_empty_thread } from "../types/Thread";
+import { null_thread } from "../types/Thread";
 import Cmmt from "../types/Comment";
 
 interface threadpopupState {
@@ -48,8 +48,9 @@ const threadpopupSlice = createSlice({
         close_thread(state) {
             state.isPopupOpen = false;
             state.isReplyBoxOpen = false;
-            state.thread = null_thread;
-            state.cmmt_list = [];
+            // Thinking about it, there isn't a need to depopulate a thread.
+            // state.thread = null_thread;
+            // state.cmmt_list = [];
         },
         /**
          * open and close reply box takes care of the button state of the popup

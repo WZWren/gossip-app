@@ -9,6 +9,11 @@ import { persistentActions } from '../features/persistent-slice';
 import { newthreadActions } from '../features/new-thread-slice';
 import * as backend from '../backend-hooks';
 
+/**
+ * Dialog for creating a new thread.
+ * The title fields are compulsory. After posting, the backend is prompted to
+ * refresh the threads.
+ */
 const NewThread: React.FC = () => {
     const isPopupOpen = useAppSelector((state) => state.new_thread.isPopupOpen);
     const isLocked = useAppSelector((state) => state.persistent.isHandlingPost);

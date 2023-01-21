@@ -7,10 +7,7 @@
 
 // no {} for counterReducer as it is the default.
 
-import {
-	Action, Dispatch, Middleware,
-	MiddlewareAPI, configureStore
-} from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import threadpopupReducer from '../features/thread-popup-slice';
 import userSliceReducer from '../features/user-slice';
 import persistentReducer from '../features/persistent-slice';

@@ -4,6 +4,10 @@ import Thread from "../types/Thread";
 /**
  * This slice (mainly) handles the storage of the threads fetched from the backend.
  * Should there be additional data to store on the frontend, it will be done here.
+ * 
+ * Lock and unlock specifically ensures that multiple requests are not sent at
+ * the same time for certain operations - the main ones are login/register, and
+ * creating, editing and deleting comments. 
  */
 
 interface persistentState {

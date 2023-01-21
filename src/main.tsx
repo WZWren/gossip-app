@@ -11,8 +11,8 @@ import LoginPage from './routes/login';
 import RegisterPage from './routes/register';
 import BookmarkPage from './routes/bookmark';
 import IgnoredPage from './routes/ignored';
+import Search from './routes/searchpage';
 
-import Thread from './types/Thread';
 import { store } from './app/store';
 
 const router = createBrowserRouter([
@@ -32,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: "ignore",
         element: <IgnoredPage />,
+      },
+      {
+        path: "searchpage",
+        element: <Search />,
       },
       {
         path: "login",

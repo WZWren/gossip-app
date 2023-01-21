@@ -1,31 +1,40 @@
 import React from "react";
-import {
-    Box, Paper, Button, TextField, Typography,
-    Checkbox, FormControlLabel, FormGroup
-} from '@mui/material';
-import { userActions } from "../features/user-slice";
-import { redirect, useNavigate } from "react-router-dom";
-import { useAppSelector } from "../app/hooks";
-import * as backend from "../backend-hooks";
-import User from "../types/User";
 
+import {
+    Box, Paper, Button, TextField, Typography
+} from '@mui/material';
+import { Navigate, useNavigate } from "react-router-dom";
+
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import * as backend from "../backend-hooks";
+import { persistentActions } from "../features/persistent-slice";
+
+/**
+ * The Register Page of the site. This page handles the registration of
+ * a new user. On successful registration, the user is redirected to the
+ * login page.
+ * 
+ * A majority of this page does not implement Redux, as the page mostly
+ * interacts with its own elements.
+ */
 const RegisterPage: React.FC = () => {
-    /**
-     * we handle the state of some components locally for this instance -
-     * there is no reason to communicate the state of the these components
-     * with the rest of the app, as the request is directly posted to the
-     * backend/locally.
-     * */
     const [error_message, setMessage] = React.useState("");
     const [user_name, setUsername] = React.useState("");
     const [user_pass, setPassword] = React.useState("");
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
+    const isLocked = useAppSelector((state) => state.persistent.isHandlingPost);
 
+    /**
+     * Handle the register request. On success, redirect to the login.
+     * Otherwise, it displays an error message for the user to see on the page.
+     */
     async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
+        dispatch(persistentActions.lock());
         await fetch(backend.RegisterBackend, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -35,6 +44,7 @@ const RegisterPage: React.FC = () => {
             })
         }).then((response) => {
             if (response.ok) {
+                dispatch(persistentActions.unlock());
                 navigate("/../login");
             } else {
                 return response.json();
@@ -43,10 +53,12 @@ const RegisterPage: React.FC = () => {
             if (result != undefined)
                 setMessage(result.message);
         });
+        dispatch(persistentActions.unlock());
     }
-
+    
+    // the user should not be here if they are logged in.
     if (isLoggedIn) {
-        navigate("/../home");
+        return <Navigate to="/../home"/>;
     }
 
     return (
@@ -93,7 +105,13 @@ const RegisterPage: React.FC = () => {
                         fullWidth
                         required
                     />
-                    <Button variant="contained" type="submit">Register</Button>
+                    <Button 
+                        variant="contained"
+                        type="submit"
+                        disabled={isLoggedIn || isLocked}
+                    >
+                        Register
+                    </Button>
                 </Box>
             </Paper>
         </>

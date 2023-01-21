@@ -1,6 +1,10 @@
 import React from "react";
 import { useRouteError } from "react-router-dom";
 
+/**
+ * The Error Page. This is implemented directly under the root as its default
+ * error handling page.
+ */
 const ErrorPage: React.FC = () => {
     const error = useRouteError() as Response;
     console.error(error);

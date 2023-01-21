@@ -2,10 +2,7 @@
  * Same slice as thread-popup, but for new threads instead.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Thread from "../types/Thread";
-import { null_thread, is_empty_thread } from "../types/Thread";
-import Cmmt from "../types/Comment";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface newpopupState {
     isPopupOpen: boolean;

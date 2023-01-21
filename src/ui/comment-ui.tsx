@@ -1,7 +1,9 @@
 import React from 'react';
+
 import {
     Card, CardContent, CardActions, Button, Typography, Collapse, TextField
 } from '@mui/material';
+
 import dateToString from '../helpers/date-to-string';
 import Cmmt from '../types/Comment';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
@@ -9,6 +11,12 @@ import * as backend from '../backend-hooks';
 import { threadpopupActions } from '../features/thread-popup-slice';
 import { persistentActions } from '../features/persistent-slice';
 
+/**
+ * The Card UI of each individual comment. This is a derivative of the ThreadUI
+ * as it is functionally similar other than its lack of interactivity and lack
+ * of a body.
+ * @param cmmt, the comment passed in by Redux
+ */
 const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
     // if you aren't logged in, the userid is 0, which isn't a valid userid.
     const dispatch = useAppDispatch();
@@ -20,6 +28,7 @@ const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
     const [isEdit, setIsEdit] = React.useState(false);
     const [isDelete, setIsDelete] = React.useState(false);
     const [edit, setEdit] = React.useState(cmmt.cmmt_body);
+    const [name, setName] = React.useState("Unknown");
 
     function handleDelete() {
         setIsDelete(true);
@@ -95,6 +104,26 @@ const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
         setIsEdit(false);
     }
 
+    // fetch the user name from the backend.
+    // while we do have the user_name in the type, this is done as a proof of concept
+    React.useEffect(() => {
+        (
+            async () => {
+                await fetch(backend.GetUserNameBackend, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        user_id: cmmt.user_id
+                    })
+                }).then((response) => response.json()).then((result) => {
+                    if (result != undefined) {
+                        setName(result.user_name);
+                    }
+                })
+            }
+        )();
+    }, []);
+
     return (
         <Card sx={{ mb: 1 }}>
             <Collapse in={!hide}>
@@ -109,7 +138,7 @@ const CommentUI: React.FC<Cmmt> = (cmmt: Cmmt) => {
                 </Typography>
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                        {cmmt.user_name} says:
+                        {name} says:
                     </Typography>
                     <Typography variant="body1" color="text.primary">
                         {cmmt.cmmt_body}

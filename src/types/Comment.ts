@@ -1,5 +1,3 @@
-import React from "react";
-
 type Cmmt = {
     cmmt_id:    number;
     user_id:    number;

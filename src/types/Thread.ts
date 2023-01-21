@@ -1,5 +1,3 @@
-import React from "react";
-
 type Thread = {
     thread_id:      number;
     user_id:        number;
@@ -23,6 +21,8 @@ export const null_thread: Thread = {
     thread_cmmt_no: 0,
     thread_body:    "",
 }
+
+// since we supply a null thread, we need a way to validate the null thread.
 export function is_empty_thread(thread: Thread): boolean {
     return (thread == null_thread);
 }

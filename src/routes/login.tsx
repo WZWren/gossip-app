@@ -1,21 +1,24 @@
 import React from "react";
+
 import {
-    Box, Paper, Button, TextField, Typography,
-    Checkbox, FormControlLabel, FormGroup
+    Box, Paper, Button, TextField, Typography
 } from '@mui/material';
+import { Navigate, useNavigate } from "react-router-dom";
+
 import { userActions } from "../features/user-slice";
-import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import * as backend from "../backend-hooks";
-import User from "../types/User";
+import { persistentActions } from "../features/persistent-slice";
 
+/**
+ * The Login Page of the site. This page handles the login info of the user
+ * and returns a HTTP-Only Cookie to the browser to preserve logins between
+ * sessions.
+ * 
+ * A majority of this page does not implement Redux, as the page mostly
+ * interacts with its own elements.
+ */
 const LoginPage: React.FC = () => {
-    /**
-     * we handle the state of some components locally for this instance -
-     * there is no reason to communicate the state of the these components
-     * with the rest of the app, as the request is directly posted to the
-     * backend/locally.
-     * */
     const [error_message, setMessage] = React.useState("");
     const [user_name, setUsername] = React.useState("");
     const [user_pass, setPassword] = React.useState("");
@@ -23,10 +26,17 @@ const LoginPage: React.FC = () => {
     const dispatch = useAppDispatch();
 
     const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
+    const isLocked = useAppSelector((state) => state.persistent.isHandlingPost);
 
+    /**
+     * Handle the login request. If the login is OK, return a cookie.
+     * Otherwise, it returns a error message that is displayed to the user
+     * in the page.
+     */
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
+        dispatch(persistentActions.lock());
         await fetch(backend.LoginBackend, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -38,6 +48,7 @@ const LoginPage: React.FC = () => {
         }).then((response) => {
             if (response.ok) {
                 dispatch(userActions.user_login_attempted());
+                dispatch(persistentActions.unlock());
                 navigate("/../home");
             } else {
                 return response.json();
@@ -46,10 +57,12 @@ const LoginPage: React.FC = () => {
             if (result != undefined)
                 setMessage(result.message);
         });
+        dispatch(persistentActions.unlock());
     }
 
+    // the user should not be here if they are logged in.
     if (isLoggedIn) {
-        navigate("/../home");
+        return <Navigate to="/../home"/>;
     }
 
     return (
@@ -99,7 +112,10 @@ const LoginPage: React.FC = () => {
                     <Button
                         variant="contained"
                         type="submit"
-                        disabled={isLoggedIn}>Go!</Button>
+                        disabled={isLoggedIn || isLocked}
+                    >
+                        Login
+                    </Button>
                 </Box>
             </Paper>
         </>
