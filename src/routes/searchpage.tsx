@@ -88,7 +88,8 @@ const Search: React.FC = () => {
                     width: 0.7,
                     mb: 1,
                     display: "flex",
-                    alignItems: "center"
+                    alignItems: "center",
+                    justifyContent: "center"
                 }}
             >
                 <FormControl margin="normal">
