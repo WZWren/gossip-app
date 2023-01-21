@@ -1,7 +1,11 @@
 import React from 'react';
 
-import {  Paper, TextField } from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
+import {
+    Box,
+    FormControl, FormControlLabel, FormLabel, Paper,
+    Radio, RadioGroup, TextField
+} from '@mui/material';
+import { Search as SearchIcon, Tag } from '@mui/icons-material';
 
 import Thread from '../types/Thread';
 import ThreadUI from '../ui/thread-ui';
@@ -13,10 +17,29 @@ const Search: React.FC = () => {
     // the redux store.
     const [input, setInput] = React.useState("");
     const [fetchData, setFetchData] = React.useState<Thread[]>([]);
+    const [tag, setTag] = React.useState(0);
+
+    function handleTag(e: React.ChangeEvent<HTMLInputElement>) {
+        switch(e.target.value) {
+            case "none":
+                setTag(0);
+                break;
+            case "work":
+                setTag(1);
+                break;
+            case "play":
+                setTag(2);
+                break;
+            default:
+                setTag(0);
+                break;
+        }
+    }
 
     React.useEffect(() => {
         // prevent the race condition.
         let isFetchDone = false;
+        // if there isn't any input, do not fetch.
         if (input == "") {
             setFetchData([]);
             return () => {
@@ -29,7 +52,8 @@ const Search: React.FC = () => {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({
-                        search: input
+                        query: input,
+                        tag_id: tag,
                     })
                 }).then((response) => response.json()).then((result) => {
                     if (result != undefined && !isFetchDone) {
@@ -42,7 +66,7 @@ const Search: React.FC = () => {
         return () => {
             isFetchDone = true;
         }
-    }, [input]);
+    }, [input, tag]);
 
     return (
         <>
@@ -58,6 +82,39 @@ const Search: React.FC = () => {
                     onChange={e => setInput(e.target.value)}
                     placeholder="Search title or body..."
                     fullWidth />
+            </ Paper>
+            <Paper
+                sx={{
+                    width: 0.7,
+                    mb: 1,
+                    display: "flex",
+                    alignItems: "center"
+                }}
+            >
+                <FormControl margin="normal">
+                    <FormLabel>Tags</FormLabel>
+                    <RadioGroup
+                        defaultValue="none"
+                        onChange={e => handleTag(e)}
+                        row
+                    >
+                        <FormControlLabel
+                            value="none"
+                            control={<Radio />}
+                            label="None"
+                        />
+                        <FormControlLabel
+                            value="work"
+                            control={<Radio />}
+                            label="Work"
+                        />
+                        <FormControlLabel
+                            value="play"
+                            control={<Radio />}
+                            label="Play"
+                        />
+                    </RadioGroup>
+                </FormControl>
             </ Paper>
             <ThreadPopup />
             {fetchData.map(elem => (

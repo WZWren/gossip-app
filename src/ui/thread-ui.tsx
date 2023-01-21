@@ -11,6 +11,8 @@ import { settingsActions } from '../features/user-settings-slice';
 import Thread from '../types/Thread';
 import dateToString from '../helpers/date-to-string';
 
+const TAG_TYPE: string[] = ["None", "Work", "Play"];
+
 /**
  * The Card UI of each individual thread. Each thread can be interacted with
  * to bring up a Dialog of a thread.
@@ -127,7 +129,15 @@ const ThreadUI: React.FC<Thread> = (thread: Thread) => {
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Button size="small" color="primary">
+                <Typography
+                    color="info.main"
+                    align="right"
+                    ml={2}
+                    mr={2}
+                >
+                    Tags: {TAG_TYPE[thread.tag_id]}
+                </Typography>
+                <Button size="small" color="primary" onClick={handleOpen}>
                     Comments ({thread.thread_cmmt_no})
                 </Button>
                 <Button 

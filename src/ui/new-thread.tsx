@@ -1,8 +1,10 @@
 import React from 'react';
+
 import {
-    Dialog, DialogTitle, DialogActions,
-    Button, Box, TextField, IconButton
+    Dialog, DialogTitle, DialogActions, RadioGroup, Radio, FormLabel,
+    FormControl, FormControlLabel, Button, Box, TextField, IconButton
 } from '@mui/material';
+
 import { Send } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { persistentActions } from '../features/persistent-slice';
@@ -23,11 +25,29 @@ const NewThread: React.FC = () => {
     // create a local state to fetch the strings from the textbox
     const [title, setTitle] = React.useState("");
     const [body, setBody] = React.useState("");
+    const [tag, setTag] = React.useState(0);
 
     function handleClose() {
         setTitle("");
         setBody("");
         dispatch(newthreadActions.close_dialog());
+    }
+
+    function handleTag(e: React.ChangeEvent<HTMLInputElement>) {
+        switch(e.target.value) {
+            case "none":
+                setTag(0);
+                break;
+            case "work":
+                setTag(1);
+                break;
+            case "play":
+                setTag(2);
+                break;
+            default:
+                setTag(0);
+                break;
+        }
     }
 
     async function handleNewThread(e: React.FormEvent<HTMLFormElement>) {
@@ -41,6 +61,7 @@ const NewThread: React.FC = () => {
             body: JSON.stringify({
                 user_id: currentUser.user_id,
                 user_name: currentUser.user_name,
+                tag_id: tag,
                 thread_title: title,
                 thread_body: body
             })
@@ -72,6 +93,30 @@ const NewThread: React.FC = () => {
             </DialogTitle>
             <DialogActions sx={{ justifyContent: "space-between" }}>
                 <Button onClick={handleClose}>Discard</Button>
+                <FormControl>
+                    <FormLabel>Tag</FormLabel>
+                    <RadioGroup
+                        defaultValue="none"
+                        onChange={e => handleTag(e)}
+                        row
+                    >
+                        <FormControlLabel
+                            value="none"
+                            control={<Radio />}
+                            label="None"
+                        />
+                        <FormControlLabel
+                            value="work"
+                            control={<Radio />}
+                            label="Work"
+                        />
+                        <FormControlLabel
+                            value="play"
+                            control={<Radio />}
+                            label="Play"
+                        />
+                    </RadioGroup>
+                </FormControl>
             </DialogActions>
             <Box component="form" onSubmit={e => handleNewThread(e)} p={2}>
                 <TextField

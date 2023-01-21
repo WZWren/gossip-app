@@ -25,8 +25,11 @@ const theme = createTheme({
         },
         secondary: {
             main: deepPurple[50],
-        }
-    }
+        },
+    },
+    typography: {
+        fontSize: 16,
+    },
 });
 
 /**
@@ -154,7 +157,7 @@ const Root: React.FC = () => {
             </Typography>
             <AppBar position="relative" sx={{marginBottom: 1}} color="primary">
                 <Toolbar>
-                    <Box sx={{ flexGrow: 1 }} />
+                    <Box sx={{ flexGrow: 0.2 }} />
                     <IconButton 
                         size="large"
                         color="secondary"
@@ -183,15 +186,15 @@ const Root: React.FC = () => {
                         disabled={!isLoggedIn}>
                         Ignored
                     </Button>
-                    <Box sx={{ flexGrow: 1 }} />
-                    <Box sx={{ flexGrow: 0.5, display: "flex", alignItems: "center" }}>
+                    <Box sx={{ flexGrow: 0.8 }} />
+                    <Box sx={{ flexGrow: 0.3, display: "flex", alignItems: "center" }}>
                         <Fade in={isLoggedIn}>
                             <Typography variant="body2">
                                 { "Welcome, " + user.user_name }
                             </Typography>
                         </Fade>
                     </Box>
-                    <Box sx={{ flexGrow: 0.5, display: "flex", alignItems: "center" }}>
+                    <Box sx={{ flexGrow: 0.3, display: "flex", alignItems: "center" }}>
                         <Button
                             size="large"
                             color="secondary"
